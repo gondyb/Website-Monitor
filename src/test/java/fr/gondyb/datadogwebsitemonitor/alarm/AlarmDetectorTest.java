@@ -1,8 +1,9 @@
-package fr.gondyb.datadogwebsitemonitor.alarmdetector;
+package fr.gondyb.datadogwebsitemonitor.alarm;
 
 import com.google.common.eventbus.EventBus;
-import fr.gondyb.datadogwebsitemonitor.alarmdetector.event.AlarmStoppedEvent;
-import fr.gondyb.datadogwebsitemonitor.alarmdetector.event.AlarmTriggeredEvent;
+import fr.gondyb.datadogwebsitemonitor.alarm.event.AlarmStoppedEvent;
+import fr.gondyb.datadogwebsitemonitor.alarm.event.AlarmTriggeredEvent;
+import fr.gondyb.datadogwebsitemonitor.ui.event.StartMonitorEvent;
 import fr.gondyb.datadogwebsitemonitor.watchdog.event.WebsiteDownEvent;
 import fr.gondyb.datadogwebsitemonitor.watchdog.event.WebsiteUpEvent;
 import org.junit.Test;
@@ -11,6 +12,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.net.URI;
+import java.util.concurrent.TimeUnit;
 
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.verify;
@@ -22,9 +24,16 @@ public class AlarmDetectorTest {
     public void it_should_throw_an_alarm_event_() {
         // Arrange
         EventBus eventBus = Mockito.mock(EventBus.class);
-        AlarmDetector alarmDetector = new AlarmDetector(eventBus);
+        AlarmDetector alarmDetector = new AlarmDetector((int) TimeUnit.MINUTES.toSeconds(2), eventBus);
 
         URI uri = URI.create("http://test.fr");
+
+        StartMonitorEvent startMonitorEvent = new StartMonitorEvent(
+                uri,
+                TimeUnit.SECONDS.toMillis(1)
+        );
+
+        alarmDetector.handleStartMonitoring(startMonitorEvent);
 
         // Act
         for (int i = 0 ; i < 80 ; i++) {

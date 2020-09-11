@@ -1,4 +1,4 @@
-package fr.gondyb.datadogwebsitemonitor.alarmdetector.event;
+package fr.gondyb.datadogwebsitemonitor.alarm.event;
 
 import lombok.Data;
 
