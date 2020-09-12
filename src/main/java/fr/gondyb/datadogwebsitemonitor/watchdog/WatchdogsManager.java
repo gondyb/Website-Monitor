@@ -2,6 +2,7 @@ package fr.gondyb.datadogwebsitemonitor.watchdog;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
+import fr.gondyb.datadogwebsitemonitor.ui.MainWindow;
 import fr.gondyb.datadogwebsitemonitor.ui.event.StartMonitorEvent;
 
 import java.util.ArrayList;
@@ -36,6 +37,7 @@ public class WatchdogsManager {
      * It then starts the WatchDog.
      *
      * @param event The event to create the watchdog from.
+     * @see MainWindow
      */
     @Subscribe
     public void addWatchdog(StartMonitorEvent event) {

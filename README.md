@@ -41,3 +41,5 @@
 * UI Statistics not very clean
 
 * Add feature to remove websites from the list
+
+* Add configuration file to change default values easily (or CLI arguments)

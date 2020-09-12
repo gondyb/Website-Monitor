@@ -10,11 +10,14 @@ import fr.gondyb.datadogwebsitemonitor.watchdog.WatchdogsManager;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * This class handles the application start, and the initialisation of different modules.
+ */
 public class Main {
     public static void main(String[] args) throws IOException {
 
-        int AVAILABILITY_THRESHOLD = 80;
-        long AVAILABILITY_PERIOD = TimeUnit.MINUTES.toMillis(2);
+        int AVAILABILITY_THRESHOLD = 80; // Default availability threshold
+        long AVAILABILITY_PERIOD = TimeUnit.MINUTES.toMillis(2); // Default availability check duration
 
         EventBus eventBus = new EventBus("default");
 
@@ -36,7 +39,7 @@ public class Main {
         MainScreen mainScreen = new MainScreen(eventBus);
         eventBus.register(mainScreen);
 
-        mainScreen.start();
-        System.exit(0);
+        mainScreen.start(); // Start the UI
+        System.exit(0); // Exit everything once its done
     }
 }
