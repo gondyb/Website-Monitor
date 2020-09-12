@@ -18,7 +18,7 @@ public class Main {
         eventBus.register(watchdogsManager);
 
         AvailabilityCalculator availabilityCalculator = new AvailabilityCalculator(
-                (int) TimeUnit.MINUTES.toMillis(2),
+                TimeUnit.MINUTES.toMillis(2),
                 eventBus
         );
         eventBus.register(availabilityCalculator);

@@ -5,10 +5,6 @@ import com.google.common.eventbus.Subscribe;
 import fr.gondyb.datadogwebsitemonitor.alarm.event.AlarmStoppedEvent;
 import fr.gondyb.datadogwebsitemonitor.alarm.event.AlarmTriggeredEvent;
 import fr.gondyb.datadogwebsitemonitor.alarm.event.AvailabilityCalculatedEvent;
-import fr.gondyb.datadogwebsitemonitor.ui.event.StartMonitorEvent;
-import fr.gondyb.datadogwebsitemonitor.watchdog.event.WebsiteDownEvent;
-import fr.gondyb.datadogwebsitemonitor.watchdog.event.WebsiteUpEvent;
-import org.apache.commons.collections4.queue.CircularFifoQueue;
 
 import java.net.URI;
 import java.util.HashMap;

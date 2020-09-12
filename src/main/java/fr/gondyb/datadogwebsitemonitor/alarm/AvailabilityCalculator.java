@@ -14,7 +14,7 @@ import java.util.Map;
 
 public class AvailabilityCalculator {
 
-    private final int historyDuration;
+    private final long historyDuration;
 
     Map<URI, CircularFifoQueue<Long>> latencies;
 
@@ -24,7 +24,7 @@ public class AvailabilityCalculator {
 
     private final EventBus eventBus;
 
-    public AvailabilityCalculator(int historyDuration, EventBus eventBus) {
+    public AvailabilityCalculator(long historyDuration, EventBus eventBus) {
         this.historyDuration = historyDuration;
         this.eventBus = eventBus;
 
@@ -35,7 +35,7 @@ public class AvailabilityCalculator {
 
     @Subscribe
     public void handleStartMonitoring(StartMonitorEvent event) {
-        this.latencies.put(event.getUri(), new CircularFifoQueue<>((int) (historyDuration * 1000 / event.getDelay())));
+        this.latencies.put(event.getUri(), new CircularFifoQueue<>((int) (historyDuration / event.getDelay())));
     }
 
     @Subscribe
