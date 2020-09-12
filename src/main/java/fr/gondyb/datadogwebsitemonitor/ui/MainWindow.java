@@ -1,16 +1,16 @@
 package fr.gondyb.datadogwebsitemonitor.ui;
 
 import com.google.common.eventbus.EventBus;
-import com.googlecode.lanterna.TerminalPosition;
 import com.googlecode.lanterna.TerminalSize;
 import com.googlecode.lanterna.gui2.*;
 import com.googlecode.lanterna.gui2.dialogs.MessageDialog;
 import com.googlecode.lanterna.gui2.dialogs.MessageDialogButton;
 import com.googlecode.lanterna.gui2.dialogs.TextInputDialog;
 import com.googlecode.lanterna.gui2.table.Table;
-import com.googlecode.lanterna.input.KeyStroke;
+import fr.gondyb.datadogwebsitemonitor.alarm.AlarmDetector;
 import fr.gondyb.datadogwebsitemonitor.alarm.event.AlarmStoppedEvent;
 import fr.gondyb.datadogwebsitemonitor.alarm.event.AlarmTriggeredEvent;
+import fr.gondyb.datadogwebsitemonitor.statistics.StatisticsAggregator;
 import fr.gondyb.datadogwebsitemonitor.statistics.event.StatisticsUpdatedEvent;
 import fr.gondyb.datadogwebsitemonitor.ui.event.StartMonitorEvent;
 
@@ -22,35 +22,69 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
 
+/**
+ * This class is the main window. It contains the different UI components. The library used for this UI is Lanterna.
+ */
 public class MainWindow extends BasicWindow {
 
+    /**
+     * This panel contains the last 10 minutes table, updated every minute.
+     */
     private final Panel minuteStatsPanel;
 
+    /**
+     * This panel contains the last hour table, updated every 10 minutes.
+     */
     private final Panel hourlyStatsPanel;
 
+    /**
+     * This table contains the last 10 minutes statistics, updated every minute.
+     */
     private final Table<String> minuteTable;
 
+    /**
+     * This table contains the last hour statistics, updated 10 minutes.
+     */
     private final Table<String> hourTable;
 
+    /**
+     * This table contains every Alarm Triggered and Alarm Stopped events.
+     */
     private final Table<String> alertsTable;
 
+    /**
+     * This panel contains the alerts table.
+     */
     private final Panel alertsPanel = new Panel();
 
+    /**
+     * This map contains the last statistics for the last 10 minutes, sorted by website URI.
+     */
     private final Map<URI, StatisticsUpdatedEvent> minuteStats = new HashMap<>();
 
+    /**
+     * This map contains the last statistics for the last hour, sorted by website URI.
+     */
     private final Map<URI, StatisticsUpdatedEvent> hourStats = new HashMap<>();
 
+    /**
+     * The global EventBus.
+     */
     private final EventBus eventBus;
 
+    /**
+     * Class constructor
+     *
+     * @param eventBus The global EventBus
+     */
     public MainWindow(EventBus eventBus) {
         this.eventBus = eventBus;
 
         Panel mainPanel = new Panel(new LinearLayout(Direction.VERTICAL));
 
         minuteStatsPanel = new Panel();
-        minuteTable = new Table<>(
+        String[] tableColumns = new String[]{
                 "URL",
                 "Min (ms)",
                 "Max (ms)",
@@ -60,21 +94,17 @@ public class MainWindow extends BasicWindow {
                 "3xx Hits",
                 "4xx Hits",
                 "5xx Hits"
+        };
+
+        minuteTable = new Table<>(
+                tableColumns
         );
         minuteStatsPanel.addComponent(minuteTable);
 
         hourlyStatsPanel = new Panel();
         hourTable = new Table<>(
-                "URL",
-                "Min (ms)",
-                "Max (ms)",
-                "Avg (ms)",
-                "Availability (%)",
-                "2xx Hits",
-                "3xx Hits",
-                "4xx Hits",
-                "5xx Hits"
-            );
+                tableColumns
+        );
         hourlyStatsPanel.addComponent(hourTable);
 
         mainPanel.addComponent(minuteStatsPanel.withBorder(Borders.singleLine("Last 10 minutes stats - Updated every 10s")));
@@ -98,43 +128,16 @@ public class MainWindow extends BasicWindow {
         setComponent(rootPanel);
         setHints(Arrays.asList(Hint.FULL_SCREEN, Hint.NO_DECORATIONS));
 
-        addWindowListener(new WindowListener() {
-            @Override
-            public void onResized(Window window, TerminalSize terminalSize, TerminalSize terminalSize1) {
-
-            }
-
-            @Override
-            public void onMoved(Window window, TerminalPosition terminalPosition, TerminalPosition terminalPosition1) {
-
-            }
-
-            @Override
-            public void onInput(Window window, KeyStroke keyStroke, AtomicBoolean atomicBoolean) {
-                MainWindow r = (MainWindow) window;
-                if (keyStroke.getCharacter() == null) {
-                    return;
-                }
-                switch (keyStroke.getCharacter()) {
-                    case 'q':
-                        window.close();
-                        break;
-                    case 'a':
-                        r.displayNewWebsiteForm();
-                        break;
-                    default:
-                        break;
-                }
-            }
-
-            @Override
-            public void onUnhandledInput(Window window, KeyStroke keyStroke, AtomicBoolean atomicBoolean) {
-
-            }
-        });
+        addWindowListener(new MainWindowListener());
     }
 
-    void displayNewWebsiteForm() {
+    /**
+     * This function displays the new website form, allowing a user to start a new monitor.
+     * It then produces a {@link StartMonitorEvent} to inform other components of the new monitor.
+     *
+     * @see MainWindowListener
+     */
+    public void displayNewWebsiteForm() {
         String websiteUriString = TextInputDialog.showDialog(
                 getTextGUI(),
                 "New website (1/2)",
@@ -180,6 +183,11 @@ public class MainWindow extends BasicWindow {
         ));
     }
 
+    /**
+     * This function update panel sizes when the terminal is resized.
+     *
+     * @param terminalSize The updated terminal size
+     */
     void onTerminalResize(TerminalSize terminalSize) {
         TerminalSize third = new TerminalSize(terminalSize.getColumns(), terminalSize.getRows() / 3 - 1);
         minuteStatsPanel.setPreferredSize(third);
@@ -187,24 +195,42 @@ public class MainWindow extends BasicWindow {
         alertsPanel.setPreferredSize(third);
     }
 
+    /**
+     * This function adds an {@link AlarmTriggeredEvent} to the alarms table.
+     *
+     * @param event The event to be added to the table
+     * @see AlarmDetector
+     */
     void onAlarmTriggeredEvent(AlarmTriggeredEvent event) {
         Date currentDate = new Date();
-        NumberFormat formatter = new DecimalFormat("#0.00");
+        NumberFormat formatter = new DecimalFormat("#0.0");
         alertsTable.getTableModel().insertRow(
                 0,
                 Collections.singletonList("Website " + event.getUri() + " is down.\t\tavailability: " + formatter.format(event.getAvailabilityPercentage()) + "%\t\ttime: " + currentDate)
         );
     }
 
+    /**
+     * This function adds an {@link AlarmStoppedEvent} to the alarm table.
+     *
+     * @param event The event to be added to the table
+     * @see AlarmDetector
+     */
     void onAlarmStoppedEvent(AlarmStoppedEvent event) {
         Date currentDate = new Date();
-        NumberFormat formatter = new DecimalFormat("#0.00");
+        NumberFormat formatter = new DecimalFormat("#0.0");
         alertsTable.getTableModel().insertRow(
                 0,
                 Collections.singletonList("Website " + event.getUri() + " is up.\t\tavailability: " + formatter.format(event.getAvailabilityPercentage()) + "%\t\ttime: " + currentDate)
         );
     }
 
+    /**
+     * This function updates the table statistics with new statistics.
+     *
+     * @param event The new statistics to be displayed
+     * @see StatisticsAggregator
+     */
     void onStatisticsUpdatedEvent(StatisticsUpdatedEvent event) {
         if (event.getSavedStatisticsDuration() == TimeUnit.MINUTES.toMillis(10)) {
             minuteStats.put(event.getWebsiteUri(), event);

@@ -37,3 +37,5 @@
 * Multiple AlarmDetector per website with observer pattern
 
 * Hysteresis
+
+* UI Statistics not very clean
