@@ -12,7 +12,8 @@ import java.util.Map;
 
 /**
  * This class triggers and untrigger alarms when it receives a {@link AvailabilityCalculatedEvent}.
- * Its logic is checking whether the availability is higher or lower than the given threshold, and checking if the website's alarm is already triggered.
+ * Its logic is checking whether the availability is higher or lower than the given threshold, and checking if the
+ * website's alarm is already triggered.
  * It produces {@link AlarmTriggeredEvent} and {@link AlarmStoppedEvent}.
  */
 public class AlarmDetector {
