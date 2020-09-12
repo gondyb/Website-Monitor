@@ -33,7 +33,7 @@
                     <archive>
                         <manifest>
                             <addClasspath>true</addClasspath>
-                            <mainClass>fr.gondyb.datadogwebsitemonitor.Main</mainClass>
+                            <mainClass>fr.gondyb.datadog.website.monitor.Main</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>
