@@ -31,7 +31,7 @@ public class AlarmDetectorTest {
         );
 
         // Act
-        alarmDetector.availabilityCalculatedHandler(availabilityCalculatedEvent);
+        alarmDetector.handleAvailabilityCalculatedEvent(availabilityCalculatedEvent);
 
         // Assert
         verify(eventBus).post(isA(AlarmTriggeredEvent.class));
@@ -51,7 +51,7 @@ public class AlarmDetectorTest {
         );
 
         // Act
-        alarmDetector.availabilityCalculatedHandler(availabilityCalculatedEvent);
+        alarmDetector.handleAvailabilityCalculatedEvent(availabilityCalculatedEvent);
 
         // Assert
         verifyNoInteractions(eventBus);
@@ -71,7 +71,7 @@ public class AlarmDetectorTest {
         );
 
         // Act
-        alarmDetector.availabilityCalculatedHandler(availabilityCalculatedEvent);
+        alarmDetector.handleAvailabilityCalculatedEvent(availabilityCalculatedEvent);
 
         // Assert
         verify(eventBus).post(isA(AlarmTriggeredEvent.class));
@@ -82,7 +82,7 @@ public class AlarmDetectorTest {
         );
 
         // Act
-        alarmDetector.availabilityCalculatedHandler(availabilityCalculatedEvent);
+        alarmDetector.handleAvailabilityCalculatedEvent(availabilityCalculatedEvent);
 
         // Assert
         verify(eventBus).post(isA(AlarmTriggeredEvent.class));

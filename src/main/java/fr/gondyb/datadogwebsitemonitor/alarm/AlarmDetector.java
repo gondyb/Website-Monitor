@@ -10,36 +10,62 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * This class triggers and untrigger alarms when it receives a {@link AvailabilityCalculatedEvent}.
+ * Its logic is checking whether the availability is higher or lower than the given threshold, and checking if the website's alarm is already triggered.
+ * It produces {@link AlarmTriggeredEvent} and {@link AlarmStoppedEvent}.
+ */
 public class AlarmDetector {
+    /**
+     * The thershold availability percentage after which an alarm should be triggered.
+     */
     private final int availabilityThreshold;
 
+    /**
+     * The global EventBus.
+     */
     private final EventBus eventBus;
 
-    Map<URI, Boolean> triggeredAlarm;
+    /**
+     * A map storing which alarms are triggered or not. The key is a website URL and the value is a boolean that is trus if the alarm is triggere.
+     */
+    Map<URI, Boolean> triggeredAlarms;
 
+    /**
+     * Class constructor
+     *
+     * @param availabilityThreshold The thershold availability percentage after which an alarm should be triggered
+     * @param eventBus              The global EventBus
+     */
     public AlarmDetector(int availabilityThreshold, EventBus eventBus) {
         this.availabilityThreshold = availabilityThreshold;
         this.eventBus = eventBus;
-        this.triggeredAlarm = new HashMap<>();
+        this.triggeredAlarms = new HashMap<>();
     }
 
+    /**
+     * This subsciber checks whether an alarm event needs to be triggered or not.
+     * It produces {@link AlarmTriggeredEvent} and {@link AlarmStoppedEvent}.
+     *
+     * @param event The {@link AvailabilityCalculatedEvent} that should be checked.
+     */
     @Subscribe
-    public void availabilityCalculatedHandler(AvailabilityCalculatedEvent event) {
+    public void handleAvailabilityCalculatedEvent(AvailabilityCalculatedEvent event) {
         URI uri = event.getUri();
 
         double percentage = event.getAvailability();
 
-        boolean alreadyTriggered = triggeredAlarm.getOrDefault(uri, false);
+        boolean alreadyTriggered = triggeredAlarms.getOrDefault(uri, false);
 
         if (percentage < availabilityThreshold && !alreadyTriggered) {
             eventBus.post(new AlarmTriggeredEvent(uri, percentage));
-            triggeredAlarm.put(uri, true);
+            triggeredAlarms.put(uri, true);
             return;
         }
 
         if (percentage >= availabilityThreshold && alreadyTriggered) {
             eventBus.post(new AlarmStoppedEvent(uri, percentage));
-            triggeredAlarm.put(uri, false);
+            triggeredAlarms.put(uri, false);
         }
 
     }

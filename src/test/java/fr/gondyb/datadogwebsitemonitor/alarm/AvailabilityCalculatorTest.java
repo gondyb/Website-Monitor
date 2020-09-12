@@ -45,7 +45,7 @@ public class AvailabilityCalculatorTest {
         );
 
         // Act
-        calculator.handlerNewUpLog(event);
+        calculator.handleWebsiteUp(event);
 
         // Assert
         verify(eventBus).post(isA(AvailabilityCalculatedEvent.class));
@@ -102,7 +102,7 @@ public class AvailabilityCalculatorTest {
             );
 
             // Act
-            calculator.handlerNewUpLog(event);
+            calculator.handleWebsiteUp(event);
         }
 
         for (int i = 0 ; i < 30 ; i++) {
@@ -146,7 +146,7 @@ public class AvailabilityCalculatorTest {
             );
 
             // Act
-            calculator.handlerNewUpLog(event);
+            calculator.handleWebsiteUp(event);
         }
 
         for (int i = 0 ; i < 30 ; i++) {
@@ -197,7 +197,7 @@ public class AvailabilityCalculatorTest {
                     uri
             );
 
-            calculator.handlerNewUpLog(event);
+            calculator.handleWebsiteUp(event);
         }
 
         // Assert
