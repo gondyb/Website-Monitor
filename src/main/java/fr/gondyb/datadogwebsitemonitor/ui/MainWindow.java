@@ -15,10 +15,7 @@ import fr.gondyb.datadogwebsitemonitor.ui.event.StartMonitorEvent;
 import java.net.URI;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -75,11 +72,11 @@ public class MainWindow extends BasicWindow {
             );
         hourlyStatsPanel.addComponent(hourTable);
 
-        mainPanel.addComponent(minuteStatsPanel.withBorder(Borders.singleLine("Last 10 minutes stats")));
-        mainPanel.addComponent(hourlyStatsPanel.withBorder(Borders.singleLine("Last hour stats")));
+        mainPanel.addComponent(minuteStatsPanel.withBorder(Borders.singleLine("Last 10 minutes stats - Updated every 10s")));
+        mainPanel.addComponent(hourlyStatsPanel.withBorder(Borders.singleLine("Last hour stats - Updated every minute")));
 
         alertsPanel.setLayoutManager(new LinearLayout());
-        alertsTable = new Table<>("Alarms");
+        alertsTable = new Table<>("");
         alertsPanel.addComponent(alertsTable);
 
         mainPanel.addComponent(alertsPanel.withBorder(Borders.singleLine("Down alerts")));
@@ -173,16 +170,18 @@ public class MainWindow extends BasicWindow {
     void onAlarmTriggeredEvent(AlarmTriggeredEvent event) {
         Date currentDate = new Date();
         NumberFormat formatter = new DecimalFormat("#0.00");
-        alertsTable.getTableModel().addRow(
-                "Website " + event.getUri() + " is down.\n\tavailability: " + formatter.format(event.getAvailabilityPercentage()) + "%\n\ttime: " + currentDate
+        alertsTable.getTableModel().insertRow(
+                0,
+                Collections.singletonList("Website " + event.getUri() + " is down.\t\tavailability: " + formatter.format(event.getAvailabilityPercentage()) + "%\t\ttime: " + currentDate)
         );
     }
 
     void onAlarmStoppedEvent(AlarmStoppedEvent event) {
         Date currentDate = new Date();
         NumberFormat formatter = new DecimalFormat("#0.00");
-        alertsTable.getTableModel().addRow(
-                "Website " + event.getUri() + " is up.\n\tavailability: " + formatter.format(event.getAvailabilityPercentage()) + "%\n\ttime: " + currentDate
+        alertsTable.getTableModel().insertRow(
+                0,
+                Collections.singletonList("Website " + event.getUri() + " is up.\t\tavailability: " + formatter.format(event.getAvailabilityPercentage()) + "%\t\ttime: " + currentDate)
         );
     }
 
