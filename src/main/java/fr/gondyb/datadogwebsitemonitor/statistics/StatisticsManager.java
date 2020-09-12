@@ -14,17 +14,38 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * This class managed the differents statistics aggregators.
+ * Its main jobs are to create the aggregator when a website starts to be monitored, and to transmit the events
+ * to the appropriate aggregators.
+ */
 public class StatisticsManager {
-
+    /**
+     * The global EventBus.
+     */
     private final EventBus eventBus;
 
+    /**
+     * The different aggregators for each URI.
+     */
     private final Map<URI, List<StatisticsAggregator>> aggregators;
 
+    /**
+     * Class Constructor
+     *
+     * @param eventBus The main EventBus
+     */
     public StatisticsManager(EventBus eventBus) {
         this.eventBus = eventBus;
         this.aggregators = new HashMap<>();
     }
 
+    /**
+     * This subscriber handles the {@link WebsiteUpEvent}. Its job is to transmit this event to the correct aggregators,
+     * in order to compute statistics.
+     *
+     * @param event The event to be transmitted
+     */
     @Subscribe
     public void handleWebsiteUpEvent(WebsiteUpEvent event) {
         List<StatisticsAggregator> websiteAggregators = this.aggregators.getOrDefault(
@@ -37,6 +58,12 @@ public class StatisticsManager {
         }
     }
 
+    /**
+     * This subscriber handles the {@link WebsiteDownEvent}. Its job is to transmit this event to the correct
+     * aggregators, in order to compute statistics.
+     *
+     * @param event The event to be transmitted
+     */
     @Subscribe
     public void handleWebsiteDownEvent(WebsiteDownEvent event) {
         List<StatisticsAggregator> websiteAggregators = this.aggregators.getOrDefault(
@@ -49,6 +76,12 @@ public class StatisticsManager {
         }
     }
 
+    /**
+     * This subscriber handles the {@link AvailabilityCalculatedEvent}. Its job is to transmit this event to the correct
+     * aggregators, in order to compute statistics.
+     *
+     * @param event The event to be transmitted
+     */
     @Subscribe
     public void availabilityCalculatedEvent(AvailabilityCalculatedEvent event) {
         List<StatisticsAggregator> websiteAggregators = this.aggregators.getOrDefault(
@@ -61,6 +94,12 @@ public class StatisticsManager {
         }
     }
 
+    /**
+     * This subscriber handles the {@link StartMonitorEvent}. Its job is to create the appropriate aggregators, to
+     * start monitoring the statistics for a given site, with given updateRate and pushRates.
+     *
+     * @param event The event containing the website that will be monitored
+     */
     @Subscribe
     public void handleStartMonitor(StartMonitorEvent event) {
         StatisticsAggregator tenMinutesAggregator = new StatisticsAggregator(

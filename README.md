@@ -29,3 +29,11 @@
 * Write a test for the alerting logic
 
 * Explain how you'd improve on this application design
+
+# To improve
+
+* Add datetime to alert events and UP/DOWN events.
+
+* Multiple AlarmDetector per website with observer pattern
+
+* Hysteresis
