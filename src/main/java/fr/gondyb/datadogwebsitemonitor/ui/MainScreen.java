@@ -18,12 +18,9 @@ import java.io.IOException;
 
 public class MainScreen {
 
-    private EventBus eventBus;
-
     private final MainWindow mainWindow;
 
     public MainScreen(EventBus eventBus) {
-        this.eventBus = eventBus;
         mainWindow =  new MainWindow(eventBus);
     }
 
@@ -38,6 +35,8 @@ public class MainScreen {
                     null, new EmptySpace(TextColor.ANSI.BLACK));
 
             gui.addWindowAndWait(mainWindow);
+        } finally {
+            terminal.close();
         }
     }
 

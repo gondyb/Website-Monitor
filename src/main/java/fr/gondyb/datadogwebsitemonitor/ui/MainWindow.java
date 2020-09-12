@@ -4,6 +4,9 @@ import com.google.common.eventbus.EventBus;
 import com.googlecode.lanterna.TerminalPosition;
 import com.googlecode.lanterna.TerminalSize;
 import com.googlecode.lanterna.gui2.*;
+import com.googlecode.lanterna.gui2.dialogs.DialogWindow;
+import com.googlecode.lanterna.gui2.dialogs.MessageDialog;
+import com.googlecode.lanterna.gui2.dialogs.MessageDialogButton;
 import com.googlecode.lanterna.gui2.dialogs.TextInputDialog;
 import com.googlecode.lanterna.gui2.table.Table;
 import com.googlecode.lanterna.input.KeyStroke;
@@ -12,7 +15,10 @@ import fr.gondyb.datadogwebsitemonitor.alarm.event.AlarmTriggeredEvent;
 import fr.gondyb.datadogwebsitemonitor.statistics.event.StatisticsUpdatedEvent;
 import fr.gondyb.datadogwebsitemonitor.ui.event.StartMonitorEvent;
 
+import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.*;
@@ -140,7 +146,21 @@ public class MainWindow extends BasicWindow {
         if (websiteUriString == null || websiteUriString.isEmpty()) {
             return;
         }
-        URI websiteUri = URI.create(websiteUriString);
+        URI websiteUri = null;
+        try {
+            URL url = new URL(websiteUriString);
+            websiteUri = url.toURI();
+        } catch (MalformedURLException | URISyntaxException e) {
+            MessageDialog.showMessageDialog(
+                    getTextGUI(),
+                    "Error",
+                    "The provided URL is not valid. Please try again.",
+                    MessageDialogButton.OK
+            );
+
+            displayNewWebsiteForm();
+            return;
+        }
 
         String websitePeriodString = TextInputDialog.showDialog(
                 getTextGUI(),
@@ -152,6 +172,7 @@ public class MainWindow extends BasicWindow {
         if (websitePeriodString == null || websitePeriodString.isEmpty()) {
             return;
         }
+
         long period = Long.parseLong(websitePeriodString);
 
         eventBus.post(new StartMonitorEvent(
@@ -193,7 +214,7 @@ public class MainWindow extends BasicWindow {
         }
 
         minuteTable.getTableModel().clear();
-        NumberFormat formatter = new DecimalFormat("#0.00");
+        NumberFormat formatter = new DecimalFormat("#0.0");
 
         for (StatisticsUpdatedEvent siteEvent : minuteStats.values()) {
             minuteTable.getTableModel().addRow(

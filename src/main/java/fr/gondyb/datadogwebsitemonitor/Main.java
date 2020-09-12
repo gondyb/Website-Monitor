@@ -33,5 +33,6 @@ public class Main {
         eventBus.register(mainScreen);
 
         mainScreen.start();
+        System.exit(0);
     }
 }
