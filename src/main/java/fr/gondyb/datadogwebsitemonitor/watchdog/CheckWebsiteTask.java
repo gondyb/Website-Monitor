@@ -8,7 +8,6 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.time.Duration;
 import java.util.TimerTask;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.TimeUnit;
@@ -16,17 +15,18 @@ import java.util.concurrent.TimeoutException;
 
 public class CheckWebsiteTask extends TimerTask {
 
-    private static final Duration DEFAULT_TIMEOUT = Duration.ofSeconds(1);
-
     private URI url;
+
+    private long timeout;
 
     private HttpClient client;
 
     private EventBus eventBus;
 
-    public CheckWebsiteTask(URI url, EventBus eventBus) {
+    public CheckWebsiteTask(URI url, long timeout, EventBus eventBus) {
         super();
         this.eventBus = eventBus;
+        this.timeout = timeout;
         this.url = url;
         this.client = HttpClient.newHttpClient();
     }
@@ -37,7 +37,7 @@ public class CheckWebsiteTask extends TimerTask {
                 .uri(url)
                 .build();
         client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
-                .orTimeout(DEFAULT_TIMEOUT.toMillis(), TimeUnit.MILLISECONDS)
+                .orTimeout(timeout, TimeUnit.MILLISECONDS)
                 .whenComplete((response, error) -> {
                     if (error != null) {
                         if (error instanceof TimeoutException || error instanceof CompletionException) {

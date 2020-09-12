@@ -27,15 +27,9 @@ public class WebsiteWatchdog {
 
     public void start() {
         timer.scheduleAtFixedRate(
-                new CheckWebsiteTask(websiteUrl, eventBus),
+                new CheckWebsiteTask(websiteUrl, interval, eventBus),
                 0,
                 interval
         );
     }
-
-    public void stop() {
-        timer.cancel();
-    }
-
-
 }
