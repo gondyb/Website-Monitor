@@ -2,6 +2,7 @@ package fr.gondyb.datadogwebsitemonitor;
 
 import com.google.common.eventbus.EventBus;
 import fr.gondyb.datadogwebsitemonitor.alarm.AlarmDetector;
+import fr.gondyb.datadogwebsitemonitor.alarm.AvailabilityCalculator;
 import fr.gondyb.datadogwebsitemonitor.statistics.StatisticsManager;
 import fr.gondyb.datadogwebsitemonitor.ui.MainScreen;
 import fr.gondyb.datadogwebsitemonitor.watchdog.WatchdogsManager;
@@ -16,7 +17,13 @@ public class Main {
         WatchdogsManager watchdogsManager = new WatchdogsManager(eventBus);
         eventBus.register(watchdogsManager);
 
-        AlarmDetector detector = new AlarmDetector((int) TimeUnit.MINUTES.toSeconds(2), eventBus);
+        AvailabilityCalculator availabilityCalculator = new AvailabilityCalculator(
+                (int) TimeUnit.MINUTES.toMillis(2),
+                eventBus
+        );
+        eventBus.register(availabilityCalculator);
+
+        AlarmDetector detector = new AlarmDetector(eventBus);
         eventBus.register(detector);
 
         StatisticsManager statisticsManager = new StatisticsManager(eventBus);

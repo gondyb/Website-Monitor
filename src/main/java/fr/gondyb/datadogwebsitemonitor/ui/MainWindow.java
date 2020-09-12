@@ -3,7 +3,6 @@ package fr.gondyb.datadogwebsitemonitor.ui;
 import com.google.common.eventbus.EventBus;
 import com.googlecode.lanterna.TerminalPosition;
 import com.googlecode.lanterna.TerminalSize;
-import com.googlecode.lanterna.TextColor;
 import com.googlecode.lanterna.gui2.*;
 import com.googlecode.lanterna.gui2.dialogs.TextInputDialog;
 import com.googlecode.lanterna.gui2.table.Table;
@@ -37,8 +36,6 @@ public class MainWindow extends BasicWindow {
 
     private final Panel alertsPanel = new Panel();
 
-    private final Panel statsPanel = new Panel(new LinearLayout(Direction.VERTICAL));
-
     private final Map<URI, StatisticsUpdatedEvent> minuteStats = new HashMap<>();
 
     private final Map<URI, StatisticsUpdatedEvent> hourStats = new HashMap<>();
@@ -48,19 +45,18 @@ public class MainWindow extends BasicWindow {
     public MainWindow(EventBus eventBus) {
         this.eventBus = eventBus;
 
-        Panel mainPanel = new Panel(new LinearLayout(Direction.HORIZONTAL));
+        Panel mainPanel = new Panel(new LinearLayout(Direction.VERTICAL));
 
         minuteStatsPanel = new Panel();
-        minuteTable = new Table<>("URL", "Min (ms)", "Max (ms)", "Avg (ms)");
+        minuteTable = new Table<>("URL", "Min (ms)", "Max (ms)", "Avg (ms)", "Availability (%)");
         minuteStatsPanel.addComponent(minuteTable);
 
         hourlyStatsPanel = new Panel();
-        hourTable = new Table<>("URL", "Min (ms)", "Max (ms)", "Avg (ms)");
+        hourTable = new Table<>("URL", "Min (ms)", "Max (ms)", "Avg (ms)", "Availability (%)");
         hourlyStatsPanel.addComponent(hourTable);
 
-        statsPanel.addComponent(minuteStatsPanel.withBorder(Borders.singleLine("Last 10 minutes stats")));
-        statsPanel.addComponent(hourlyStatsPanel.withBorder(Borders.singleLine("Last hour stats")));
-        mainPanel.addComponent(statsPanel);
+        mainPanel.addComponent(minuteStatsPanel.withBorder(Borders.singleLine("Last 10 minutes stats")));
+        mainPanel.addComponent(hourlyStatsPanel.withBorder(Borders.singleLine("Last hour stats")));
 
         alertsPanel.setLayoutManager(new LinearLayout());
         alertsTable = new Table<>("Alarms");
@@ -148,19 +144,17 @@ public class MainWindow extends BasicWindow {
     }
 
     void onTerminalResize(TerminalSize terminalSize) {
-        TerminalSize half = new TerminalSize(terminalSize.getColumns() / 2, terminalSize.getRows() - 1);
-        TerminalSize quarter = new TerminalSize(half.getColumns(), (half.getRows() / 2) + 1);
-        minuteStatsPanel.setPreferredSize(quarter);
-        hourlyStatsPanel.setPreferredSize(quarter);
-        statsPanel.setPreferredSize(half);
-        alertsPanel.setPreferredSize(half);
+        TerminalSize third = new TerminalSize(terminalSize.getColumns(), terminalSize.getRows() / 3 - 1);
+        minuteStatsPanel.setPreferredSize(third);
+        hourlyStatsPanel.setPreferredSize(third);
+        alertsPanel.setPreferredSize(third);
     }
 
     void onAlarmTriggeredEvent(AlarmTriggeredEvent event) {
         Date currentDate = new Date();
         NumberFormat formatter = new DecimalFormat("#0.00");
         alertsTable.getTableModel().addRow(
-                "Website " + event.getUri() + " is down.\t\tavailability: " + formatter.format(event.getAvailabilityPercentage()) + "%\ttime: " + currentDate
+                "Website " + event.getUri() + " is down.\n\tavailability: " + formatter.format(event.getAvailabilityPercentage()) + "%\n\ttime: " + currentDate
         );
     }
 
@@ -168,7 +162,7 @@ public class MainWindow extends BasicWindow {
         Date currentDate = new Date();
         NumberFormat formatter = new DecimalFormat("#0.00");
         alertsTable.getTableModel().addRow(
-                "Website " + event.getUri() + " recovered.\tavailability: " + formatter.format(event.getAvailabilityPercentage()) + "%\ttime: " + currentDate
+                "Website " + event.getUri() + " is up.\n\tavailability: " + formatter.format(event.getAvailabilityPercentage()) + "%\n\ttime: " + currentDate
         );
     }
 
@@ -180,13 +174,15 @@ public class MainWindow extends BasicWindow {
         }
 
         minuteTable.getTableModel().clear();
+        NumberFormat formatter = new DecimalFormat("#0.00");
 
         for (StatisticsUpdatedEvent siteEvent : minuteStats.values()) {
             minuteTable.getTableModel().addRow(
                     siteEvent.getWebsiteUri().toString(),
                     String.valueOf(siteEvent.getMinLatency()),
                     String.valueOf(siteEvent.getMaxLatency()),
-                    String.valueOf(siteEvent.getAverageLatency())
+                    String.valueOf(siteEvent.getAverageLatency()),
+                    formatter.format(siteEvent.getAvailability())
             );
         }
 
@@ -197,7 +193,8 @@ public class MainWindow extends BasicWindow {
                     siteEvent.getWebsiteUri().toString(),
                     String.valueOf(siteEvent.getMinLatency()),
                     String.valueOf(siteEvent.getMaxLatency()),
-                    String.valueOf(siteEvent.getAverageLatency())
+                    String.valueOf(siteEvent.getAverageLatency()),
+                    formatter.format(siteEvent.getAvailability())
             );
         }
     }

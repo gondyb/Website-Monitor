@@ -14,13 +14,16 @@ public class StatisticsUpdatedEvent {
 
     private long minLatency;
 
+    private double availability;
+
     private long savedStatisticsDuration;
 
-    public StatisticsUpdatedEvent(URI uri, long averageLatency, long maxLatency, long minLatency, long savedStatisticsDuration) {
+    public StatisticsUpdatedEvent(URI uri, long averageLatency, long maxLatency, long minLatency, double availability, long savedStatisticsDuration) {
         this.websiteUri = uri;
         this.averageLatency = averageLatency;
         this.maxLatency = maxLatency;
         this.minLatency = minLatency;
+        this.availability = availability;
         this.savedStatisticsDuration = savedStatisticsDuration;
     }
 }

@@ -10,6 +10,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.TimerTask;
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
@@ -39,9 +40,11 @@ public class CheckWebsiteTask extends TimerTask {
                 .orTimeout(DEFAULT_TIMEOUT.toMillis(), TimeUnit.MILLISECONDS)
                 .whenComplete((response, error) -> {
                     if (error != null) {
-                        if (error instanceof TimeoutException) {
+                        if (error instanceof TimeoutException || error instanceof CompletionException) {
                             eventBus.post(new WebsiteDownEvent(url));
+                            return;
                         }
+                        error.printStackTrace();
                         return;
                     }
 

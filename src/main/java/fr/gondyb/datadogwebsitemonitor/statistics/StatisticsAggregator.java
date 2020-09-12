@@ -1,6 +1,7 @@
 package fr.gondyb.datadogwebsitemonitor.statistics;
 
 import com.google.common.eventbus.EventBus;
+import fr.gondyb.datadogwebsitemonitor.alarm.event.AvailabilityCalculatedEvent;
 import fr.gondyb.datadogwebsitemonitor.statistics.event.StatisticsUpdatedEvent;
 import fr.gondyb.datadogwebsitemonitor.watchdog.event.WebsiteDownEvent;
 import fr.gondyb.datadogwebsitemonitor.watchdog.event.WebsiteUpEvent;
@@ -8,6 +9,8 @@ import lombok.Data;
 import org.apache.commons.collections4.queue.CircularFifoQueue;
 
 import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -22,6 +25,8 @@ public class StatisticsAggregator {
 
     private final CircularFifoQueue<Long> latencies;
 
+    private final Map<Integer, Integer> responseCodesPercentage;
+
     private final EventBus eventBus;
 
     private long minLatency = Long.MAX_VALUE;
@@ -32,7 +37,9 @@ public class StatisticsAggregator {
 
     private long sumLatencies = 0;
 
-    private long pollingRate = 0;
+    private double availability = -1;
+
+    private long pollingRate;
 
     public StatisticsAggregator(URI websiteUri, long pollingRate, long savedStatisticsDuration, long eventPushingRate, EventBus eventBus) {
         this.pollingRate = pollingRate;
@@ -48,7 +55,8 @@ public class StatisticsAggregator {
             public void run() {
                 pushStatistics();
             }
-        }, this.eventPushingRate, this.eventPushingRate);
+        }, 0, this.eventPushingRate);
+        responseCodesPercentage = new HashMap<>();
     }
 
     protected void handleWebsiteUpEvent(WebsiteUpEvent event) {
@@ -59,14 +67,18 @@ public class StatisticsAggregator {
         computeStatistics(pollingRate);
     }
 
+    protected void handleAvailabilityCalculatedEvent(AvailabilityCalculatedEvent event) {
+        this.availability = event.getAvailability();
+    }
+
     private void computeStatistics(long newLatency) {
         if (latencies.isAtFullCapacity()) {
             long removedLatency = latencies.remove();
             if (removedLatency == minLatency) {
-                minLatency = Long.MAX_VALUE;
+                minLatency = latencies.stream().mapToLong(v -> v).min().orElse(-1);
             }
             if (removedLatency == maxLatency) {
-                maxLatency = 0;
+                maxLatency = latencies.stream().mapToLong(v -> v).max().orElse(-1);
             }
 
             sumLatencies -= removedLatency;
@@ -83,9 +95,10 @@ public class StatisticsAggregator {
     private void pushStatistics() {
         StatisticsUpdatedEvent event = new StatisticsUpdatedEvent(
                 this.websiteUri,
-                avgLatency,
-                maxLatency,
-                minLatency,
+                this.avgLatency,
+                this.maxLatency,
+                this.minLatency,
+                this.availability,
                 this.savedStatisticsDuration
         );
 

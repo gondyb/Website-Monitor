@@ -2,7 +2,7 @@ package fr.gondyb.datadogwebsitemonitor.statistics;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import fr.gondyb.datadogwebsitemonitor.statistics.event.StatisticsUpdatedEvent;
+import fr.gondyb.datadogwebsitemonitor.alarm.event.AvailabilityCalculatedEvent;
 import fr.gondyb.datadogwebsitemonitor.ui.event.StartMonitorEvent;
 import fr.gondyb.datadogwebsitemonitor.watchdog.event.WebsiteDownEvent;
 import fr.gondyb.datadogwebsitemonitor.watchdog.event.WebsiteUpEvent;
@@ -46,6 +46,18 @@ public class StatisticsManager {
 
         for (StatisticsAggregator aggregator : websiteAggregators) {
             aggregator.handleWebsiteDownEvent(event);
+        }
+    }
+
+    @Subscribe
+    public void availabilityCalculatedEvent(AvailabilityCalculatedEvent event) {
+        List<StatisticsAggregator> websiteAggregators = this.aggregators.getOrDefault(
+                event.getUri(),
+                new ArrayList<>()
+        );
+
+        for (StatisticsAggregator aggregator : websiteAggregators) {
+            aggregator.handleAvailabilityCalculatedEvent(event);
         }
     }
 
