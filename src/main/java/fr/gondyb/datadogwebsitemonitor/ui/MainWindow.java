@@ -153,7 +153,7 @@ public class MainWindow extends BasicWindow {
             MessageDialog.showMessageDialog(
                     getTextGUI(),
                     "Error",
-                    "The provided URL is not valid. Please try again.",
+                    "The provided URL is not valid. Please try again. WARNING: The URL has to start with http:// or https://",
                     MessageDialogButton.OK
             );
 
