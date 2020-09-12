@@ -1,21 +1,19 @@
 package fr.gondyb.datadogwebsitemonitor.watchdog;
 
 import com.google.common.eventbus.EventBus;
-import lombok.Data;
 
 import java.net.URI;
 import java.util.Timer;
 
-@Data
 public class WebsiteWatchdog {
 
-    private URI websiteUrl;
+    private final URI websiteUrl;
 
-    private long interval;
+    private final long interval;
 
-    private EventBus eventBus;
+    private final EventBus eventBus;
 
-    private Timer timer;
+    private final Timer timer;
 
     public WebsiteWatchdog(URI websiteUrl, long interval, EventBus eventBus) {
         this.websiteUrl = websiteUrl;

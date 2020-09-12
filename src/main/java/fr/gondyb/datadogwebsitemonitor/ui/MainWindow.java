@@ -4,7 +4,6 @@ import com.google.common.eventbus.EventBus;
 import com.googlecode.lanterna.TerminalPosition;
 import com.googlecode.lanterna.TerminalSize;
 import com.googlecode.lanterna.gui2.*;
-import com.googlecode.lanterna.gui2.dialogs.DialogWindow;
 import com.googlecode.lanterna.gui2.dialogs.MessageDialog;
 import com.googlecode.lanterna.gui2.dialogs.MessageDialogButton;
 import com.googlecode.lanterna.gui2.dialogs.TextInputDialog;
@@ -146,7 +145,7 @@ public class MainWindow extends BasicWindow {
         if (websiteUriString == null || websiteUriString.isEmpty()) {
             return;
         }
-        URI websiteUri = null;
+        URI websiteUri;
         try {
             URL url = new URL(websiteUriString);
             websiteUri = url.toURI();

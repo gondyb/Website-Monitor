@@ -1,14 +1,14 @@
 package fr.gondyb.datadogwebsitemonitor.ui.event;
 
-import lombok.Data;
+import lombok.Getter;
 
 import java.net.URI;
 
-@Data
+@Getter
 public class StartMonitorEvent {
-    private URI uri;
+    private final URI uri;
 
-    private long delay;
+    private final long delay;
 
     public StartMonitorEvent(URI uri, long delay) {
         this.uri = uri;

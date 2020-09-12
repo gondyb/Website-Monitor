@@ -1,12 +1,12 @@
 package fr.gondyb.datadogwebsitemonitor.watchdog.event;
 
-import lombok.Data;
+import lombok.Getter;
 
 import java.net.URI;
 
-@Data
+@Getter
 public class WebsiteDownEvent {
-    private URI uri;
+    private final URI uri;
 
     public WebsiteDownEvent(URI uri) {
         this.uri = uri;

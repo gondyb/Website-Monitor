@@ -1,14 +1,14 @@
 package fr.gondyb.datadogwebsitemonitor.alarm.event;
 
-import lombok.Data;
+import lombok.Getter;
 
 import java.net.URI;
 
-@Data
+@Getter
 public class AvailabilityCalculatedEvent {
-    private URI uri;
+    private final URI uri;
 
-    private double availability;
+    private final double availability;
 
     public AvailabilityCalculatedEvent(URI uri, double availability) {
         this.uri = uri;

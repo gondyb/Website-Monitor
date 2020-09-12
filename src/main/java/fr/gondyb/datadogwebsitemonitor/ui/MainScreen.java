@@ -25,8 +25,7 @@ public class MainScreen {
     }
 
     public void start() throws IOException {
-        Terminal terminal = new DefaultTerminalFactory().createTerminal();
-        try (Screen screen = new TerminalScreen(terminal)) {
+        try (Terminal terminal = new DefaultTerminalFactory().createTerminal(); Screen screen = new TerminalScreen(terminal)) {
             screen.setCursorPosition(null);
             screen.startScreen();
             terminal.addResizeListener((terminal1, terminalSize) -> mainWindow.onTerminalResize(terminalSize));
@@ -35,8 +34,6 @@ public class MainScreen {
                     null, new EmptySpace(TextColor.ANSI.BLACK));
 
             gui.addWindowAndWait(mainWindow);
-        } finally {
-            terminal.close();
         }
     }
 

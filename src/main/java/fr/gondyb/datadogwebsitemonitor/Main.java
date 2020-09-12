@@ -12,18 +12,22 @@ import java.util.concurrent.TimeUnit;
 
 public class Main {
     public static void main(String[] args) throws IOException {
+
+        int AVAILABILITY_THRESHOLD = 80;
+        long AVAILABILITY_PERIOD = TimeUnit.MINUTES.toMillis(2);
+
         EventBus eventBus = new EventBus("default");
 
         WatchdogsManager watchdogsManager = new WatchdogsManager(eventBus);
         eventBus.register(watchdogsManager);
 
         AvailabilityCalculator availabilityCalculator = new AvailabilityCalculator(
-                TimeUnit.MINUTES.toMillis(2),
+                AVAILABILITY_PERIOD,
                 eventBus
         );
         eventBus.register(availabilityCalculator);
 
-        AlarmDetector detector = new AlarmDetector(eventBus);
+        AlarmDetector detector = new AlarmDetector(AVAILABILITY_THRESHOLD, eventBus);
         eventBus.register(detector);
 
         StatisticsManager statisticsManager = new StatisticsManager(eventBus);

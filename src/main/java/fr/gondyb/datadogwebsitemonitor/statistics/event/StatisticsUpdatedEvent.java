@@ -1,25 +1,25 @@
 package fr.gondyb.datadogwebsitemonitor.statistics.event;
 
-import lombok.Data;
+import lombok.Getter;
 
 import java.net.URI;
 import java.util.Map;
 
-@Data
+@Getter
 public class StatisticsUpdatedEvent {
-    private URI websiteUri;
+    private final URI websiteUri;
 
-    private long averageLatency;
+    private final long averageLatency;
 
-    private long maxLatency;
+    private final long maxLatency;
 
-    private long minLatency;
+    private final long minLatency;
 
-    private double availability;
+    private final double availability;
 
-    private Map<Integer, Integer> responseCodeHits;
+    private final Map<Integer, Integer> responseCodeHits;
 
-    private long savedStatisticsDuration;
+    private final long savedStatisticsDuration;
 
     public StatisticsUpdatedEvent(URI uri, long averageLatency, long maxLatency, long minLatency, double availability, Map<Integer, Integer> responseCodeHits, long savedStatisticsDuration) {
         this.websiteUri = uri;

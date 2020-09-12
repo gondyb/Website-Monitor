@@ -8,9 +8,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class WatchdogsManager {
-    private List<WebsiteWatchdog> watchdogs;
+    private final List<WebsiteWatchdog> watchdogs;
 
-    private EventBus eventBus;
+    private final EventBus eventBus;
 
     public WatchdogsManager(EventBus eventBus) {
         this.eventBus = eventBus;

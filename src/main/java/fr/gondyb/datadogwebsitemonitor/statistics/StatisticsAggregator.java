@@ -5,7 +5,6 @@ import fr.gondyb.datadogwebsitemonitor.alarm.event.AvailabilityCalculatedEvent;
 import fr.gondyb.datadogwebsitemonitor.statistics.event.StatisticsUpdatedEvent;
 import fr.gondyb.datadogwebsitemonitor.watchdog.event.WebsiteDownEvent;
 import fr.gondyb.datadogwebsitemonitor.watchdog.event.WebsiteUpEvent;
-import lombok.Data;
 import org.apache.commons.collections4.queue.CircularFifoQueue;
 
 import java.net.URI;
@@ -14,14 +13,11 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
-@Data
 public class StatisticsAggregator {
 
     private final URI websiteUri;
 
     private final long savedStatisticsDuration;
-
-    private final long eventPushingRate;
 
     private final CircularFifoQueue<Long> latencies;
 
@@ -41,13 +37,12 @@ public class StatisticsAggregator {
 
     private double availability = -1;
 
-    private long pollingRate;
+    private final long pollingRate;
 
     public StatisticsAggregator(URI websiteUri, long pollingRate, long savedStatisticsDuration, long eventPushingRate, EventBus eventBus) {
         this.pollingRate = pollingRate;
         this.websiteUri = websiteUri;
         this.savedStatisticsDuration = savedStatisticsDuration;
-        this.eventPushingRate = eventPushingRate;
         this.eventBus = eventBus;
         this.latencies = new CircularFifoQueue<>((int) (savedStatisticsDuration / pollingRate));
         responseCodes = new CircularFifoQueue<>((int) (savedStatisticsDuration / pollingRate));
@@ -59,7 +54,7 @@ public class StatisticsAggregator {
             public void run() {
                 pushStatistics();
             }
-        }, 0, this.eventPushingRate);
+        }, 0, eventPushingRate);
     }
 
     protected void handleWebsiteUpEvent(WebsiteUpEvent event) {

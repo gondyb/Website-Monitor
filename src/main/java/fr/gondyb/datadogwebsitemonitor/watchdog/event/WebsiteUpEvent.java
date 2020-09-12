@@ -1,16 +1,16 @@
 package fr.gondyb.datadogwebsitemonitor.watchdog.event;
 
-import lombok.Data;
+import lombok.Getter;
 
 import java.net.URI;
 
-@Data
+@Getter
 public class WebsiteUpEvent {
-    private long responseTime;
+    private final long responseTime;
 
-    private int responseCode;
+    private final int responseCode;
 
-    private URI uri;
+    private final URI uri;
 
     public WebsiteUpEvent(long responseTime, int responseCode, URI uri) {
         this.responseTime = responseTime;

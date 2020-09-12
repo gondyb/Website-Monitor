@@ -15,13 +15,13 @@ import java.util.concurrent.TimeoutException;
 
 public class CheckWebsiteTask extends TimerTask {
 
-    private URI url;
+    private final URI url;
 
-    private long timeout;
+    private final long timeout;
 
-    private HttpClient client;
+    private final HttpClient client;
 
-    private EventBus eventBus;
+    private final EventBus eventBus;
 
     public CheckWebsiteTask(URI url, long timeout, EventBus eventBus) {
         super();

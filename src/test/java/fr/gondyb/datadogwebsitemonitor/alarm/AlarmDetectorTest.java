@@ -21,7 +21,7 @@ public class AlarmDetectorTest {
     public void it_should_throw_an_alarm_event_if_availability_is_under_80() {
         // Arrange
         EventBus eventBus = Mockito.mock(EventBus.class);
-        AlarmDetector alarmDetector = new AlarmDetector(eventBus);
+        AlarmDetector alarmDetector = new AlarmDetector(80, eventBus);
 
         URI uri = URI.create("http://test.fr");
 
@@ -41,7 +41,7 @@ public class AlarmDetectorTest {
     public void it_should_not_throw_an_alarm_event_if_availability_is_over_80() {
         // Arrange
         EventBus eventBus = Mockito.mock(EventBus.class);
-        AlarmDetector alarmDetector = new AlarmDetector(eventBus);
+        AlarmDetector alarmDetector = new AlarmDetector(80, eventBus);
 
         URI uri = URI.create("http://test.fr");
 
@@ -61,7 +61,7 @@ public class AlarmDetectorTest {
     public void it_should_throw_an_alarm_stopped_event_if_availability_is_over_80_after_being_triggered() {
         // Arrange
         EventBus eventBus = Mockito.mock(EventBus.class);
-        AlarmDetector alarmDetector = new AlarmDetector(eventBus);
+        AlarmDetector alarmDetector = new AlarmDetector(80, eventBus);
 
         URI uri = URI.create("http://test.fr");
 

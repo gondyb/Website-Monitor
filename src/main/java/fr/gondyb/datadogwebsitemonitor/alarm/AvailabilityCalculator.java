@@ -16,11 +16,11 @@ public class AvailabilityCalculator {
 
     private final long historyDuration;
 
-    Map<URI, CircularFifoQueue<Long>> latencies;
+    private final Map<URI, CircularFifoQueue<Long>> latencies;
 
-    Map<URI, Integer> upCounters;
+    private final Map<URI, Integer> upCounters;
 
-    Map<URI, Integer> downCounters;
+    private final Map<URI, Integer> downCounters;
 
     private final EventBus eventBus;
 
