@@ -48,11 +48,31 @@ public class MainWindow extends BasicWindow {
         Panel mainPanel = new Panel(new LinearLayout(Direction.VERTICAL));
 
         minuteStatsPanel = new Panel();
-        minuteTable = new Table<>("URL", "Min (ms)", "Max (ms)", "Avg (ms)", "Availability (%)");
+        minuteTable = new Table<>(
+                "URL",
+                "Min (ms)",
+                "Max (ms)",
+                "Avg (ms)",
+                "Availability (%)",
+                "2xx Hits",
+                "3xx Hits",
+                "4xx Hits",
+                "5xx Hits"
+        );
         minuteStatsPanel.addComponent(minuteTable);
 
         hourlyStatsPanel = new Panel();
-        hourTable = new Table<>("URL", "Min (ms)", "Max (ms)", "Avg (ms)", "Availability (%)");
+        hourTable = new Table<>(
+                "URL",
+                "Min (ms)",
+                "Max (ms)",
+                "Avg (ms)",
+                "Availability (%)",
+                "2xx Hits",
+                "3xx Hits",
+                "4xx Hits",
+                "5xx Hits"
+            );
         hourlyStatsPanel.addComponent(hourTable);
 
         mainPanel.addComponent(minuteStatsPanel.withBorder(Borders.singleLine("Last 10 minutes stats")));
@@ -182,7 +202,11 @@ public class MainWindow extends BasicWindow {
                     String.valueOf(siteEvent.getMinLatency()),
                     String.valueOf(siteEvent.getMaxLatency()),
                     String.valueOf(siteEvent.getAverageLatency()),
-                    formatter.format(siteEvent.getAvailability())
+                    formatter.format(siteEvent.getAvailability()),
+                    String.valueOf(siteEvent.getResponseCodeHits().getOrDefault(2, 0)),
+                    String.valueOf(siteEvent.getResponseCodeHits().getOrDefault(3, 0)),
+                    String.valueOf(siteEvent.getResponseCodeHits().getOrDefault(4, 0)),
+                    String.valueOf(siteEvent.getResponseCodeHits().getOrDefault(5, 0))
             );
         }
 
@@ -194,7 +218,11 @@ public class MainWindow extends BasicWindow {
                     String.valueOf(siteEvent.getMinLatency()),
                     String.valueOf(siteEvent.getMaxLatency()),
                     String.valueOf(siteEvent.getAverageLatency()),
-                    formatter.format(siteEvent.getAvailability())
+                    formatter.format(siteEvent.getAvailability()),
+                    String.valueOf(siteEvent.getResponseCodeHits().getOrDefault(2, 0)),
+                    String.valueOf(siteEvent.getResponseCodeHits().getOrDefault(3, 0)),
+                    String.valueOf(siteEvent.getResponseCodeHits().getOrDefault(4, 0)),
+                    String.valueOf(siteEvent.getResponseCodeHits().getOrDefault(5, 0))
             );
         }
     }

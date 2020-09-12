@@ -25,7 +25,9 @@ public class StatisticsAggregator {
 
     private final CircularFifoQueue<Long> latencies;
 
-    private final Map<Integer, Integer> responseCodesPercentage;
+    private final CircularFifoQueue<Integer> responseCodes;
+
+    private final Map<Integer, Integer> responseCodesHits;
 
     private final EventBus eventBus;
 
@@ -48,6 +50,8 @@ public class StatisticsAggregator {
         this.eventPushingRate = eventPushingRate;
         this.eventBus = eventBus;
         this.latencies = new CircularFifoQueue<>((int) (savedStatisticsDuration / pollingRate));
+        responseCodes = new CircularFifoQueue<>((int) (savedStatisticsDuration / pollingRate));
+        responseCodesHits = new HashMap<>();
 
         Timer updateTimer = new Timer();
         updateTimer.scheduleAtFixedRate(new TimerTask() {
@@ -56,22 +60,22 @@ public class StatisticsAggregator {
                 pushStatistics();
             }
         }, 0, this.eventPushingRate);
-        responseCodesPercentage = new HashMap<>();
     }
 
     protected void handleWebsiteUpEvent(WebsiteUpEvent event) {
-        computeStatistics(event.getResponseTime());
+        computeTimeStatistics(event.getResponseTime());
+        computeResponseCodesStatistics(event.getResponseCode());
     }
 
     protected void handleWebsiteDownEvent(WebsiteDownEvent event) {
-        computeStatistics(pollingRate);
+        computeTimeStatistics(pollingRate);
     }
 
     protected void handleAvailabilityCalculatedEvent(AvailabilityCalculatedEvent event) {
         this.availability = event.getAvailability();
     }
 
-    private void computeStatistics(long newLatency) {
+    private void computeTimeStatistics(long newLatency) {
         if (latencies.isAtFullCapacity()) {
             long removedLatency = latencies.remove();
             if (removedLatency == minLatency) {
@@ -92,13 +96,29 @@ public class StatisticsAggregator {
         avgLatency = sumLatencies / latencies.size();
     }
 
+    private void computeResponseCodesStatistics(Integer responseCode) {
+        if (responseCodes.isAtFullCapacity()) {
+            Integer responseCodeToRemove = responseCodes.remove();
+
+            Integer responseCodeCategory = responseCodeToRemove / 100;
+
+            Integer previousCounter = responseCodesHits.get(responseCodeCategory);
+            responseCodesHits.put(responseCodeCategory, previousCounter - 1);
+        }
+
+        Integer responseCodeCategory = responseCode / 100;
+        Integer previousCounter = responseCodesHits.getOrDefault(responseCodeCategory, 0);
+        responseCodesHits.put(responseCodeCategory, previousCounter + 1);
+    }
+
     private void pushStatistics() {
         StatisticsUpdatedEvent event = new StatisticsUpdatedEvent(
                 this.websiteUri,
                 this.avgLatency,
                 this.maxLatency,
-                this.minLatency,
+                this.minLatency == Long.MAX_VALUE ? 0 : this.minLatency,
                 this.availability,
+                this.responseCodesHits,
                 this.savedStatisticsDuration
         );
 
