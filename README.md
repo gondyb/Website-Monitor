@@ -36,6 +36,12 @@
 
 ## How to run it
 
+### Docker
+
+If you have docker installed, you can build the container with `docker build -t wsmonitor .` then run it with `docker run -it --rm wsmonitor`.
+
+### Java
+
 This project requires **Java 11 Runtime** installed.
 
 To run it, launch this command in a terminal:
@@ -47,7 +53,7 @@ To run it, launch this command in a terminal:
 To test this application, I built a small [Slow server](https://gist.github.com/gondyb/19e72e601e72b654af1b02d59d8db833) in Python.
 Its availability percentage is around 60%, thus it makes a great candidate for real-life testing.
 
-# To improve
+# Things to improve
 
 * The date/time values from the alarms table should be taken from the event, instead of the date/time of writing.
 
