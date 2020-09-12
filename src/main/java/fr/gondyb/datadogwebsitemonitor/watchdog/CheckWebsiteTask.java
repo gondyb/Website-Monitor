@@ -13,16 +13,38 @@ import java.util.concurrent.CompletionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+/**
+ * This {@link TimerTask} checks the availability of a website and produces events accordingly.
+ */
 public class CheckWebsiteTask extends TimerTask {
 
+    /**
+     * The URI of the website to check.
+     */
     private final URI url;
 
+    /**
+     * The timeout after which send a {@link WebsiteDownEvent}.
+     */
     private final long timeout;
 
+    /**
+     * The client used to make requests.
+     */
     private final HttpClient client;
 
+    /**
+     * THe global EventBus
+     */
     private final EventBus eventBus;
 
+    /**
+     * Class Constructor
+     *
+     * @param url      The URI of the website to check
+     * @param timeout  The timeout after which send a {@link WebsiteDownEvent}
+     * @param eventBus The global EventBus
+     */
     public CheckWebsiteTask(URI url, long timeout, EventBus eventBus) {
         super();
         this.eventBus = eventBus;
@@ -31,11 +53,17 @@ public class CheckWebsiteTask extends TimerTask {
         this.client = HttpClient.newHttpClient();
     }
 
+    /**
+     * This functions checks the website availability, and produces either a {@link WebsiteUpEvent} or
+     * {@link WebsiteDownEvent}, according to the response or error.
+     */
     public void run() {
         long startMillis = System.currentTimeMillis();
+
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(url)
                 .build();
+
         client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
                 .orTimeout(timeout, TimeUnit.MILLISECONDS)
                 .whenComplete((response, error) -> {

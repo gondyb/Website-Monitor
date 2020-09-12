@@ -39,3 +39,5 @@
 * Hysteresis
 
 * UI Statistics not very clean
+
+* Add feature to remove websites from the list
