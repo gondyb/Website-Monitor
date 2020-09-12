@@ -113,7 +113,9 @@ public class StatisticsAggregator {
                 this.maxLatency,
                 this.minLatency == Long.MAX_VALUE ? 0 : this.minLatency,
                 this.availability,
-                this.responseCodesHits,
+                new HashMap<>(this.responseCodesHits),  // We need to create a new HashMap,
+                // otherwise the pointer is passed,
+                // and the window's data is updated continuously.
                 this.savedStatisticsDuration
         );
 
