@@ -52,6 +52,8 @@ This package computes different kind of statistics about the websites. It then s
 
 ## Things to improve
 
+* The alarms table could be more corlorful with red color for down alarms and green color for up alarms.
+
 * The date/time values from the alarms table should be taken from the event, instead of the date/time of writing.
 
 * Instead of using one AlarmDetector, I should create one per website, this should make the code more readable and maintainable.
