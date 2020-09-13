@@ -50,7 +50,13 @@ This package computes the availability for websites. It also triggers alarm acco
 
 This package computes different kind of statistics about the websites. It then sends these statistics back to the UI.
 
+### Alarm system test
+
+To test the alarm system, I unit tested the availability calculator, and the alarm detector. For the whole process to be tested, I also should test the watchdogs correctly working and sending WebsiteUp events. I would do this with more time.
+
 ## Things to improve
+
+* When a website is down, the polling rate is displayed under the "max" statistics. I should add a timeout symbol instead.
 
 * The alarms table could be more corlorful with red color for down alarms and green color for up alarms.
 
