@@ -142,7 +142,7 @@ public class MainWindow extends BasicWindow {
                 getTextGUI(),
                 "New website (1/2)",
                 "Please enter the URL for the website to check",
-                "http://localhost:"
+                "https://www.datadoghq.com/"
         );
 
         if (websiteUriString == null || websiteUriString.isEmpty()) {
@@ -244,10 +244,10 @@ public class MainWindow extends BasicWindow {
         for (StatisticsUpdatedEvent siteEvent : minuteStats.values()) {
             minuteTable.getTableModel().addRow(
                     siteEvent.getWebsiteUri().toString(),
-                    String.valueOf(siteEvent.getMinLatency()),
-                    String.valueOf(siteEvent.getMaxLatency()),
-                    String.valueOf(siteEvent.getAverageLatency()),
-                    formatter.format(siteEvent.getAvailability()),
+                    siteEvent.getMinLatency() == 0 ? "" : String.valueOf(siteEvent.getMinLatency()),
+                    siteEvent.getMaxLatency() == 0 ? "" : String.valueOf(siteEvent.getMaxLatency()),
+                    siteEvent.getAverageLatency() == -1 ? "" : String.valueOf(siteEvent.getAverageLatency()),
+                    siteEvent.getAvailability() == -1 ? "" : formatter.format(siteEvent.getAvailability()),
                     String.valueOf(siteEvent.getResponseCodeHits().getOrDefault(2, 0)),
                     String.valueOf(siteEvent.getResponseCodeHits().getOrDefault(3, 0)),
                     String.valueOf(siteEvent.getResponseCodeHits().getOrDefault(4, 0)),
@@ -260,10 +260,10 @@ public class MainWindow extends BasicWindow {
         for (StatisticsUpdatedEvent siteEvent : hourStats.values()) {
             hourTable.getTableModel().addRow(
                     siteEvent.getWebsiteUri().toString(),
-                    String.valueOf(siteEvent.getMinLatency()),
-                    String.valueOf(siteEvent.getMaxLatency()),
-                    String.valueOf(siteEvent.getAverageLatency()),
-                    formatter.format(siteEvent.getAvailability()),
+                    siteEvent.getMinLatency() == 0 ? "" : String.valueOf(siteEvent.getMinLatency()),
+                    siteEvent.getMaxLatency() == 0 ? "" : String.valueOf(siteEvent.getMaxLatency()),
+                    siteEvent.getAverageLatency() == -1 ? "" : String.valueOf(siteEvent.getAverageLatency()),
+                    siteEvent.getAvailability() == -1 ? "" : formatter.format(siteEvent.getAvailability()),
                     String.valueOf(siteEvent.getResponseCodeHits().getOrDefault(2, 0)),
                     String.valueOf(siteEvent.getResponseCodeHits().getOrDefault(3, 0)),
                     String.valueOf(siteEvent.getResponseCodeHits().getOrDefault(4, 0)),
