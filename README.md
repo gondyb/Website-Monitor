@@ -6,6 +6,27 @@
 
 This console application allows a user to monitor a website, its availability and its performances.
 
+## How to run it
+
+⚠️You may need to make the terminal a little bit bigger to display every statistics.
+
+### Docker
+
+If you have docker installed, you can build the container with `docker build -t wsmonitor .` then run it with `docker run -it --rm wsmonitor`.
+
+### Java
+
+This project requires **Java 11 Runtime** installed.
+
+To run it, launch this command in a terminal:
+
+`java -jar wsmonitor.jar`
+
+## Fake server
+
+To test this application, I built a small [Slow server](https://gist.github.com/gondyb/19e72e601e72b654af1b02d59d8db833) in Python.
+Its availability percentage is around 60%, thus it makes a great candidate for real-life testing.
+
 ## Design overview
 
 This application is centered around an EventBus. This allows for different application parts to communicate together without being coupled, and with high cohesion.
@@ -28,27 +49,6 @@ This package computes the availability for websites. It also triggers alarm acco
 ### Statistics package
 
 This package computes different kind of statistics about the websites. It then sends these statistics back to the UI.
-
-## How to run it
-
-⚠️You may need to make the terminal a little bit bigger to display every statistics.
-
-### Docker
-
-If you have docker installed, you can build the container with `docker build -t wsmonitor .` then run it with `docker run -it --rm wsmonitor`.
-
-### Java
-
-This project requires **Java 11 Runtime** installed.
-
-To run it, launch this command in a terminal:
-
-`java -jar wsmonitor.jar`
-
-## Fake server
-
-To test this application, I built a small [Slow server](https://gist.github.com/gondyb/19e72e601e72b654af1b02d59d8db833) in Python.
-Its availability percentage is around 60%, thus it makes a great candidate for real-life testing.
 
 ## Things to improve
 
